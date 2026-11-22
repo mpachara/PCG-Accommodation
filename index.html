@@ -30,7 +30,7 @@
       --color-on-accent: #FFFFFF;
 
       --color-background: #0F172A;
-      --color-map-bg: #0B1220;
+      --color-map-bg: #E2E8F0;
       --color-card: #111827;
       --color-elevated: #162033;
       --color-muted: #1E293B;
@@ -254,14 +254,68 @@
       background: var(--color-map-bg);
     }
 
-    /* Calibrated Dark Map Tiles (preserves detailed Thai street/soi labels without inverting pins) */
-    .leaflet-tile-pane {
-      filter: invert(1) hue-rotate(180deg) brightness(0.90) contrast(0.92) saturate(0.75);
-    }
-
+    /* Light Mode OpenStreetMap tiles inside Dark Mode UI shell */
     .leaflet-container {
       background: var(--color-map-bg);
       font-family: inherit;
+    }
+
+    /* Hospital Landmark Pin (distinct rounded square + medical cross) */
+    .hospital-pin-wrap {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .hospital-pin {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #0284C7;
+      color: #FFFFFF;
+      border: 2.5px solid #FFFFFF;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45), 0 2px 6px rgba(15, 23, 42, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) ease;
+    }
+
+    .hospital-pin-wrap:hover .hospital-pin {
+      transform: scale(1.22);
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.32), 0 6px 16px rgba(15, 23, 42, 0.42);
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: #111827;
+      color: #F8FAFC;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaflet-popup-tip {
+      background: #111827;
+    }
+
+    .leaflet-popup-close-button {
+      color: #CBD5E1 !important;
+      padding: 6px 8px !important;
+    }
+
+    .legend-hosp {
+      width: 13px;
+      height: 13px;
+      border-radius: 4px;
+      background: #0284C7;
+      color: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .leaflet-control-zoom {
@@ -1509,6 +1563,7 @@
             <span class="legend-item"><span class="legend-dot" style="background:var(--status-wait)"></span>รอว่าง</span>
             <span class="legend-item"><span class="legend-dot" style="background:var(--status-full)"></span>เต็ม</span>
             <span class="legend-item"><span class="legend-dot" style="background:var(--status-unverified)"></span>เดิม</span>
+            <span class="legend-item"><span class="legend-hosp" aria-hidden="true"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>รพ.</span>
           </div>
 
           <!-- Compact Floating Route HUD -->
@@ -1700,8 +1755,28 @@
       zoom: `<svg class="ic" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>`,
       bolt: `<svg class="ic" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
       fridge: `<svg class="ic" aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/></svg>`,
-      alert: `<svg class="ic" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+      alert: `<svg class="ic" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+      hospital: `<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`
     };
+
+    const HOSPITAL_LANDMARKS = [
+      {
+        id: "bangna-2-hospital",
+        name: "โรงพยาบาลบางนา 2",
+        address: "9/9 ม.3 ถ.บางนา-ตราด กม.23 ต.บางเสาธง อ.บางเสาธง สมุทรปราการ",
+        lat: 13.5940702,
+        lng: 100.8050430,
+        gmaps_url: "https://www.google.com/maps/search/?api=1&query=13.5940702,100.8050430"
+      },
+      {
+        id: "chularat-3-inter",
+        name: "โรงพยาบาลจุฬารัตน์ 3 อินเตอร์",
+        address: "88/8-9 ถ.เทพารักษ์ กม.14.5 ต.บางปลา อ.บางพลี สมุทรปราการ",
+        lat: 13.5995940,
+        lng: 100.7212988,
+        gmaps_url: "https://www.google.com/maps/search/?api=1&query=13.5995940,100.7212988"
+      }
+    ];
 
     let activeView = "map";
     let filterHideFull = false;
@@ -1763,7 +1838,7 @@
       return m ? m[0].replace(/-/g, "") : "";
     }
 
-    // ===== Initialize Dark Map =====
+    // ===== Initialize Light Map =====
     const map = L.map("map", { zoomControl: true, tap: true }).setView([PCG_HQ.lat, PCG_HQ.lng], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -1771,19 +1846,44 @@
     }).addTo(map);
 
     const ringsGroup = L.layerGroup().addTo(map);
+    const landmarksGroup = L.layerGroup().addTo(map);
     const pinsGroup = L.layerGroup().addTo(map);
     const activeRouteGroup = L.layerGroup().addTo(map);
 
     [2000, 3000, 5000].forEach((r, idx) => {
       L.circle([PCG_HQ.lat, PCG_HQ.lng], {
         radius: r,
-        color: idx === 0 ? "#FB7185" : "#F43F5E",
-        opacity: idx === 0 ? 0.55 : 0.32,
-        weight: 1.2,
+        color: idx === 0 ? "#E11D48" : "#F43F5E",
+        opacity: idx === 0 ? 0.50 : 0.30,
+        weight: 1.3,
         dashArray: "5, 6",
-        fillOpacity: 0.02,
+        fillOpacity: 0.015,
         interactive: false
       }).addTo(ringsGroup);
+    });
+
+    // Hospital Landmark Pins (Bangna 2 & Chularat 3 Inter)
+    HOSPITAL_LANDMARKS.forEach(h => {
+      const hIcon = L.divIcon({
+        className: "",
+        html: `<div class="hospital-pin-wrap" role="button" aria-label="${h.name}"><div class="hospital-pin">${SVG.hospital}</div></div>`,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+      L.marker([h.lat, h.lng], { icon: hIcon, zIndexOffset: 750 })
+        .bindTooltip(h.name, {
+          direction: "top",
+          offset: [0, -18],
+          className: "name-only-tooltip"
+        })
+        .bindPopup(`
+          <div style="font-family:inherit;min-width:210px;padding:2px;">
+            <div style="font-weight:700;font-size:14px;color:#38BDF8;margin-bottom:4px;">${h.name}</div>
+            <div style="font-size:12px;color:#CBD5E1;line-height:1.4;margin-bottom:10px;">${h.address}</div>
+            <a href="${h.gmaps_url}" target="_blank" rel="noopener" style="display:block;text-align:center;padding:8px 10px;border-radius:9px;background:#0369A1;color:#FFFFFF;font-size:12.5px;font-weight:700;">เปิดใน Google Maps ↗</a>
+          </div>
+        `)
+        .addTo(landmarksGroup);
     });
 
     const pcgIcon = L.divIcon({
@@ -1809,6 +1909,7 @@
       const list = getVisibleProperties();
       const pts = list.map(p => [p.pin_lat, p.pin_lng]);
       pts.push([PCG_HQ.lat, PCG_HQ.lng]);
+      HOSPITAL_LANDMARKS.forEach(h => pts.push([h.lat, h.lng]));
       map.fitBounds(L.latLngBounds(pts), { padding: [46, 46], animate: !prefersReducedMotion() });
     }
 
@@ -1903,8 +2004,8 @@
       const coords = p.route_polyline;
       if (!coords || coords.length < 2) return;
 
-      L.polyline(coords, { color: "#020617", weight: 9, opacity: 0.88 }).addTo(activeRouteGroup);
-      L.polyline(coords, { color: "#14B8A6", weight: 5, opacity: 0.98 }).addTo(activeRouteGroup);
+      L.polyline(coords, { color: "#FFFFFF", weight: 8, opacity: 0.92 }).addTo(activeRouteGroup);
+      L.polyline(coords, { color: "#0F766E", weight: 5, opacity: 0.98 }).addTo(activeRouteGroup);
 
       const hud = document.getElementById("route-hud");
       hud.classList.add("is-visible");

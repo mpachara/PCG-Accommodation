@@ -1909,7 +1909,6 @@
       const list = getVisibleProperties();
       const pts = list.map(p => [p.pin_lat, p.pin_lng]);
       pts.push([PCG_HQ.lat, PCG_HQ.lng]);
-      HOSPITAL_LANDMARKS.forEach(h => pts.push([h.lat, h.lng]));
       map.fitBounds(L.latLngBounds(pts), { padding: [46, 46], animate: !prefersReducedMotion() });
     }
 
